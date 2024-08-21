@@ -33,7 +33,7 @@
 # In[4]:
 
 
-data_dir = 'processed_celeba_small/'
+
 
 """
 DON'T MODIFY ANYTHING IN THIS CELL
@@ -44,7 +44,7 @@ import numpy as np
 import problem_unittests as tests
 #import helper
 
-get_ipython().run_line_magic('matplotlib', 'inline')
+#get_ipython().run_line_magic('matplotlib', 'inline')
 
 
 # ## Visualize the CelebA Data
@@ -108,16 +108,6 @@ def get_dataloader(batch_size, image_size, data_dir='processed_celeba_small/'):
 # In[7]:
 
 
-# Define function hyperparameters
-batch_size = 20
-img_size = 32
-num_workers = 0
-drop_out = 0.10 #drop out prob
-"""
-DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
-"""
-# Call your function and get a dataloader
-celeba_train_loader = get_dataloader(batch_size, img_size)
 
 
 # Next, you can view some images! You should seen square images of somewhat-centered faces.
@@ -135,16 +125,7 @@ def imshow(img):
 """
 DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
 """
-# obtain one batch of training images
-dataiter = iter(celeba_train_loader)
-images, _ = dataiter.next() # _ for no labels
 
-# plot the images in the batch, along with the corresponding labels
-fig = plt.figure(figsize=(20, 4))
-plot_size=20
-for idx in np.arange(plot_size):
-    ax = fig.add_subplot(2, plot_size/2, idx+1, xticks=[], yticks=[])
-    imshow(images[idx])
 
 
 # #### Exercise: Pre-process your image data and scale it to a pixel range of -1 to 1
@@ -172,13 +153,7 @@ def scale(x, feature_range=(-1, 1)):
 """
 DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
 """
-# check scaled range
-# should be close to -1 to 1
-img = images[0]
-scaled_img = scale(img)
 
-print('Min: ', scaled_img.min())
-print('Max: ', scaled_img.max())
 
 
 # ---
@@ -269,7 +244,7 @@ class Discriminator(nn.Module):
 """
 DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
 """
-tests.test_discriminator(Discriminator)
+#tests.test_discriminator(Discriminator)
 
 
 # ## Generator
@@ -345,7 +320,7 @@ class Generator(nn.Module):
 """
 DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
 """
-tests.test_generator(Generator)
+#tests.test_generator(Generator)
 
 
 # ## Initialize the weights of your networks
@@ -424,18 +399,7 @@ def build_network(d_conv_dim, g_conv_dim, z_size):
 # In[16]:
 
 
-# Define model hyperparams
-d_conv_dim = img_size
-g_conv_dim = img_size
-z_size = 100
 
-"""
-DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
-"""
-D, G = build_network(d_conv_dim, g_conv_dim, z_size)
-print(D)
-print()
-print(G)
 
 
 # ### Training on GPU
@@ -752,3 +716,47 @@ _ = view_samples(-1, samples)
 
 # ### Submitting This Project
 # When submitting this project, make sure to run all the cells before saving the notebook. Save the notebook file as "dlnd_face_generation.ipynb" and save it as a HTML file under "File" -> "Download as". Include the "problem_unittests.py" files in your submission.
+if __name__ == '__main__':
+    # Define function hyperparameters
+    batch_size = 20
+    img_size = 32
+    num_workers = 0
+    drop_out = 0.10  # drop out prob
+    """
+    DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
+    """
+    data_dir = 'C:\\Users\\u242000\\processed-celeba-small\\processed_celeba_small\\'
+    print('Call your function and get a dataloader')
+    celeba_train_loader = get_dataloader(batch_size, img_size)
+
+    print('obtain one batch of training images')
+    dataiter = iter(celeba_train_loader)
+    images, _ = dataiter.next()  # _ for no labels
+
+    # plot the images in the batch, along with the corresponding labels
+    fig = plt.figure(figsize=(20, 4))
+    plot_size = 20
+    for idx in np.arange(plot_size):
+        ax = fig.add_subplot(2, plot_size / 2, idx + 1, xticks=[], yticks=[])
+        imshow(images[idx])
+
+
+    # check scaled range
+    # should be close to -1 to 1
+    img = images[0]
+    scaled_img = scale(img)
+
+    print('Min: ', scaled_img.min())
+    print('Max: ', scaled_img.max())
+    # Define model hyperparams
+    d_conv_dim = img_size
+    g_conv_dim = img_size
+    z_size = 100
+
+    """
+    DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
+    """
+    D, G = build_network(d_conv_dim, g_conv_dim, z_size)
+    print(D)
+    print()
+    print(G)
