@@ -41,7 +41,7 @@ DON'T MODIFY ANYTHING IN THIS CELL
 import pickle as pkl
 import matplotlib.pyplot as plt
 import numpy as np
-import problem_unittests as tests
+#import problem_unittests as tests
 #import helper
 
 #get_ipython().run_line_magic('matplotlib', 'inline')
@@ -198,7 +198,7 @@ def conv_seq(input_channels, output_channels, kernel_size, stride=2, padding=1, 
 
 class Discriminator(nn.Module):
 
-    def __init__(self, conv_dim=img_size):
+    def __init__(self, conv_dim=32):
         """
         Initialize the Discriminator Module
         :param conv_dim: The depth of the first convolutional layer
@@ -275,7 +275,7 @@ def deconv_seq(input_channels, output_channels, kernel_size, stride = 2, padding
 
 class Generator(nn.Module):
     
-    def __init__(self, z_size, conv_dim=img_size):
+    def __init__(self, z_size, conv_dim=32):
         """
         Initialize the Generator Module
         :param z_size: The length of the input latent vector, z
@@ -497,13 +497,6 @@ def fake_loss(D_out):
 
 
 import torch.optim as optim
-#parameters
-lr = 0.0006  #value between 0.0002 and 0.001
-b1 = 0.3     #value between 0.1 and 0.3
-b2 = 0.999
-# Create optimizers for the discriminator D and generator G
-d_optimizer = optim.Adam(D.parameters(), lr, [b1,b2]) 
-g_optimizer = optim.Adam(D.parameters(), lr, [b1,b2])
 
 
 # ---
@@ -642,30 +635,6 @@ def train(D, G, n_epochs, print_every=1400):
 # In[21]:
 
 
-# set number of epochs 
-n_epochs = 50
-
-
-"""
-DON'T MODIFY ANYTHING IN THIS CELL
-"""
-# call training function
-losses = train(D, G, n_epochs=n_epochs)
-
-
-# ## Training loss
-# 
-# Plot the training losses for the generator and discriminator, recorded after each epoch.
-
-# In[22]:
-
-
-fig, ax = plt.subplots()
-losses = np.array(losses)
-plt.plot(losses.T[0], label='Discriminator', alpha=0.5)
-plt.plot(losses.T[1], label='Generator', alpha=0.5)
-plt.title("Training Losses")
-plt.legend()
 
 
 # ## Generator samples from training
@@ -685,20 +654,13 @@ def view_samples(epoch, samples):
         ax.xaxis.set_visible(False)
         ax.yaxis.set_visible(False)
         im = ax.imshow(img.reshape((32,32,3)))
+    plt.show()
 
 
 # In[24]:
 
 
-# Load samples from generator, taken while training
-with open('train_samples.pkl', 'rb') as f:
-    samples = pkl.load(f)
 
-
-# In[25]:
-
-
-_ = view_samples(-1, samples)
 
 
 # ### Question: What do you notice about your generated samples and how might you improve this model?
@@ -725,20 +687,22 @@ if __name__ == '__main__':
     """
     DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
     """
-    data_dir = 'C:\\Users\\u242000\\processed-celeba-small\\processed_celeba_small\\'
+    data_dir = 'C:\\Users\\u242000\\processed-celeba-small\\'
     print('Call your function and get a dataloader')
-    celeba_train_loader = get_dataloader(batch_size, img_size)
+    celeba_train_loader = get_dataloader(batch_size, img_size, data_dir=data_dir)
 
     print('obtain one batch of training images')
     dataiter = iter(celeba_train_loader)
-    images, _ = dataiter.next()  # _ for no labels
+    #images, _ = dataiter.next()  # _ for no labels
+    images, _ = next(dataiter)
 
-    # plot the images in the batch, along with the corresponding labels
+    print('plot the images in the batch, along with the corresponding labels')
     fig = plt.figure(figsize=(20, 4))
     plot_size = 20
     for idx in np.arange(plot_size):
-        ax = fig.add_subplot(2, plot_size / 2, idx + 1, xticks=[], yticks=[])
+        ax = fig.add_subplot(2, int(plot_size / 2), idx + 1, xticks=[], yticks=[])
         imshow(images[idx])
+    plt.show()
 
 
     # check scaled range
@@ -756,7 +720,45 @@ if __name__ == '__main__':
     """
     DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
     """
+    print('build network')
     D, G = build_network(d_conv_dim, g_conv_dim, z_size)
     print(D)
     print()
     print(G)
+    # parameters
+    lr = 0.0006  # value between 0.0002 and 0.001
+    b1 = 0.3  # value between 0.1 and 0.3
+    b2 = 0.999
+    # Create optimizers for the discriminator D and generator G
+    d_optimizer = optim.Adam(D.parameters(), lr, [b1, b2])
+    g_optimizer = optim.Adam(D.parameters(), lr, [b1, b2])
+
+    # set number of epochs
+    n_epochs = 50
+
+    """
+    DON'T MODIFY ANYTHING IN THIS CELL
+    """
+    print('call training function')
+    losses = train(D, G, n_epochs=n_epochs)
+
+    # ## Training loss
+    #
+    # Plot the training losses for the generator and discriminator, recorded after each epoch.
+
+    # In[22]:
+
+    fig, ax = plt.subplots()
+    losses = np.array(losses)
+    plt.plot(losses.T[0], label='Discriminator', alpha=0.5)
+    plt.plot(losses.T[1], label='Generator', alpha=0.5)
+    plt.title("Training Losses")
+    plt.legend()
+
+    # Load samples from generator, taken while training
+    with open('train_samples.pkl', 'rb') as f:
+        samples = pkl.load(f)
+
+    # In[25]:
+
+    _ = view_samples(-1, samples)
